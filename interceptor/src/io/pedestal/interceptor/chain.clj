@@ -274,11 +274,11 @@
   "Adds interceptors to the end of context's execution queue. Creates
   the queue if necessary. Returns updated context."
   [context interceptors]
-  {:pre [(every? interceptor/interceptor? interceptors)]}
+  {:pre [(every? #(satisfies? interceptor/IntoInterceptor %) interceptors)]}
   (log/trace :enqueue (map name interceptors) :context context)
   (update-in context [::queue]
              (fnil into clojure.lang.PersistentQueue/EMPTY)
-             interceptors))
+             (map interceptor/interceptor interceptors)))
 
 (defn enqueue*
   "Like 'enqueue' but vararg.
